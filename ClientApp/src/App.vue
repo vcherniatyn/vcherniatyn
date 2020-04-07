@@ -1,84 +1,62 @@
 <template>
   <v-app>
 
-    <v-navigation-drawer persistent :mini-variant="miniVariant" :clipped="clipped" v-model="drawer" enable-resize-watcher fixed app
-                         v-if="isLogined">
-      <v-list>
-          <v-list-item value="true" v-for="(item, i) in items" :key="i" :to="item.link">
-              <v-list-item-action>
-                  <v-icon v-html="item.icon"></v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                  <v-list-item-title v-text="item.title"></v-list-item-title>
-              </v-list-item-content>
-          </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
-    <v-app-bar v-if="isLogined" app :clipped-left="clipped" color="info" dark>
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-btn class="d-none d-lg-flex" icon @click.stop="miniVariant = !miniVariant">
-            <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
-        </v-btn>
-        <v-btn class="d-none d-lg-flex" icon @click.stop="clipped = !clipped">
-            <v-icon>web</v-icon>
-        </v-btn>
-        <v-toolbar-title v-text="title"></v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-chip class="ma-2"
-                color="info"
-                text-color="white"
-                pill>
-            <v-icon left>mdi-account-outline</v-icon>
-            {{userName}}
-        </v-chip>
-        <v-divider class="mx-4"
-                   inset
-                   vertical></v-divider>
-        <v-btn color="indigo lighten-5"
-               outlined
-               text
-               @click="logOut">LogOut</v-btn>
-    </v-app-bar>
-
     <v-content>
-        <router-view />
-        <notifications group="main" position="bottom right" />
-    </v-content>
+        <v-container fluid>
+        <v-slide-y-transition mode="out-in">
+            <v-row>
+                <v-col>
+                    <v-data-table :headers="headers"
+                                  :items="users"
+                                  class="elevation-1">
+                        <template v-slot:item.action="{ item }">
+                            <v-dialog v-model="removeDialog" persistent max-width="350">
+                                <template v-slot:activator="{ on }">
+                                    <v-icon large v-on="on"
+                                            @click="removedUser = item;">
+                                        mdi-delete
+                                    </v-icon>
+                                </template>
+                                <v-card>
+                                    <v-card-title class="headline">Remove -{{removedUser.name}}- user?</v-card-title>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="green darken-1" text @click="removeDialog = false">Cancel</v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+                        </template>
+                    </v-data-table>
 
-    <v-footer app>
-        <span>&nbsp;XXX&nbsp;&copy;&nbsp;{{ new Date().getFullYear() }}</span>
-    </v-footer>
+                </v-col>
+            </v-row>
+        </v-slide-y-transition>
+    </v-container>
+    </v-content>
 
   </v-app>
 </template>
 
+
 <script lang="ts">
     import Vue from 'vue';
-    import store from '@/store/index';
-    import { MenuItem } from './models/MenuItem';
-    import { Role } from '@/store/Role';
+    import { User } from './models/User';
 
     export default Vue.extend({
         data() {
             return {
-                clipped: true,
-                drawer: true,
-                miniVariant: false,
-                right: true,
-                title: 'XXX site',
-                userName: store.state.user.name,
-                isLogined: store.state.isLogined,
+                users: [    new User(1, 'test1', '', '', new Date(), [], false),
+                             new User(22, 'test2', '', '', new Date(), [], false),
+                             new User(3, 'test3', '', '', new Date(), [], false)],
 
-                items: [
-                    new MenuItem('Users', 'perm_identity', '/', store.state.isLogined, []),
-                ] as MenuItem[],
+                
+                removeDialog: false,
+                removedUser: {} as User,
+
+                headers: [
+                    { text: 'Actions', value: 'action', sortable: false },
+                ],
             };
-        },
-        methods: {
-            logOut() {
-                //new UserService().logout();
-            },
         },
     });
 </script>

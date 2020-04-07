@@ -2,7 +2,6 @@
 var webpack = require('webpack')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const isProd = process.env.NODE_ENV === 'production'
@@ -70,7 +69,6 @@ module.exports = {
         extensions: ['*', '.js', '.vue', '.json']
     },
     plugins: [
-        new MonacoWebpackPlugin(),
         new VueLoaderPlugin(),
         new VuetifyLoaderPlugin({
             progressiveImages: true
